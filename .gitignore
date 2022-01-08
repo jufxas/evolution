@@ -5,4 +5,5 @@ ts-utils/drawHandler.js
 ts-utils/rectangle.js
 ts-utils/rgba.js
 ts-utils/track.js
+ts-utils/.DS_Store
 tsconfig.json
