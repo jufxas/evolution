@@ -1,8 +1,8 @@
-./ts-utils/drawHandler.js
-./ts-utils/eventHandler.js
-./ts-utils/MyQuery.js
-./ts-utils/drawHandler.js
-./ts-utils/rectangle.js
-./ts-utils/rgba.js
-./ts-utils/track.js
-./tsconfig.json
+/ts-utils/drawHandler.js
+/ts-utils/eventHandler.js
+/ts-utils/MyQuery.js
+/ts-utils/drawHandler.js
+/ts-utils/rectangle.js
+/ts-utils/rgba.js
+/ts-utils/track.js
+/tsconfig.json
