@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            background-color: rgb(10, 125, 233);
+            margin: 0;
+        }
+        canvas {
+            border: 1px solid black;
+        }
+        div#man {
+            width: 500px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="1000" height="1000"></canvas>
+    <h1>Press "e" to toggle on and off the drawing </h1>
+    <h1 id="allowDrawing">allowDrawing: true</h1>
+    <h1 id="position"></h1>
+
+    <script src="./utils/eventHandler.js"></script>
+    <script src="./utils/MyQuery.js"></script>
+    <script src="./utils/rgba.js"></script>
+    <script src="./utils/rectangle.js"></script>
+    <script src="./utils/drawHandler.js"></script>
+    <script src="./utils/track.js"></script>
+    <script src="./main.js"></script>
+</body>
+</html>
