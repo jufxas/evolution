@@ -8,6 +8,15 @@
 // you can automatically clean out the exports statements in the compiled javascript stuff by entering the compiled js into https://jufxas.github.io/file-fixer/   
 // make sure the var draw = { ... } still remains  
 
+// making gitignore work : https://stackoverflow.com/questions/25436312/gitignore-not-working
+/*
+The files/folder in your version control will not just delete themselves just because you added them to the .gitignore. They are already in the repository and you have to remove them. You can just do that with this:
+Remember to commit everything you've changed before you do this!
+git rm -rf --cached .
+git add .
+*/ 
+
+
 declare const mq: typeof import("./ts-utils/MyQuery")
 declare const draw: typeof import("./ts-utils/drawHandler")
 declare const rgba: typeof import("./ts-utils/rgba")
