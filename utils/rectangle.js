@@ -15,7 +15,7 @@ class Rectangle {
     }
 }
 
-
+//jufSAVE
 var rectangle = {
     Rectangle: Rectangle
 }

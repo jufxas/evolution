@@ -87,8 +87,93 @@ class ChunkData {
         this.topLeft = { x: minX, y: minY };
     }
 }
+class CompressedDrawHandler {
+    constructor(width, height, outlineColor, fillColor) {
+        this.rectangleCoordHolder = [];
+        this.isMouseDown = false;
+        this.ignore = false;
+        this.mouseWentDownAfterBeingUp = undefined;
+        this.width = width || 3;
+        this.height = height || 3;
+        this.outlineColor = outlineColor || new RGBA(255, 255, 255);
+        this.fillColor = fillColor || new RGBA(255, 255, 255);
+    }
+    onMouseDownFunction() {
+        this.isMouseDown = true;
+        this.mouseWentDownAfterBeingUp = false;
+    }
+    copyDrawData() {
+        return this.rectangleCoordHolder;
+    }
+    onMouseUpFunction() {
+        this.isMouseDown = false;
+        if (this.mouseWentDownAfterBeingUp === false)
+            this.mouseWentDownAfterBeingUp = true;
+    }
+    onUpdate(mouseX, mouseY) {
+        if (this.mouseWentDownAfterBeingUp) {
+            this.ignore = true;
+            this.mouseWentDownAfterBeingUp = false;
+        }
+        if (this.isMouseDown) {
+            this.rectangleCoordHolder.push({
+                x: mouseX,
+                y: mouseY,
+            });
+            if (this.rectangleCoordHolder.length >= 2 && this.ignore === false) {
+                // last 2 elements 
+                let rectangle1 = this.rectangleCoordHolder[this.rectangleCoordHolder.length - 2];
+                let rectangle2 = this.rectangleCoordHolder[this.rectangleCoordHolder.length - 1];
+                let deltaX = rectangle2.x - rectangle1.x;
+                let deltaY = rectangle2.y - rectangle1.y;
+                const numberOfSteps = Math.floor(Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2)) / 2);
+                deltaX /= numberOfSteps;
+                deltaY /= numberOfSteps;
+                for (let k = 0; k < numberOfSteps; k++) {
+                    this.rectangleCoordHolder.push({
+                        x: rectangle1.x + k * deltaX,
+                        y: rectangle1.y + k * deltaY,
+                    });
+                }
+            }
+            if (this.ignore === true)
+                this.ignore = false;
+        }
+    }
+    renderRectangles(canvasRendererContext) {
+        for (const r of this.rectangleCoordHolder) {
+            canvasRendererContext.strokeStyle = this.outlineColor.format();
+            canvasRendererContext.fillStyle = this.fillColor.format();
+            canvasRendererContext.fillRect(r.x, r.y, this.width, this.height);
+        }
+    }
+}
+class ChunkCompressedData {
+    constructor(coordData, pixelWidth, pixelHeight) {
+        this.coordData = [];
+        if (coordData.length === 0)
+            return;
+        this.coordData = coordData;
+        let coordXValues = [];
+        let coordYValues = [];
+        for (const coord of coordData) {
+            coordXValues.push(coord.x);
+            coordYValues.push(coord.y);
+        }
+        let minX = Math.min(...coordXValues);
+        let maxX = Math.max(...coordXValues);
+        let minY = Math.min(...coordYValues);
+        let maxY = Math.max(...coordYValues);
+        this.width = Math.abs(maxX - minX) + (pixelWidth || 3);
+        this.height = Math.abs(maxY - minY) + (pixelHeight || 3);
+        this.topLeft = { x: minX, y: minY };
+    }
+}
 
+//jufSAVE
 var draw = {
     DrawHandler: DrawHandler, 
+    CompressedDrawHandler: CompressedDrawHandler,
+    ChunkCompressedData: ChunkCompressedData,
     ChunkData: ChunkData
 }

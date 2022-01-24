@@ -20,7 +20,7 @@ let mouseY = 0;
 let frameCount = 0;
 let backgroundColor = new rgba.RGBA(100, 100, 255);
 // draw handler 
-const drawHandler = new draw.DrawHandler();
+const drawHandler = new draw.CompressedDrawHandler();
 let allowDrawing = true;
 // track 
 const track = new bg.Track(new rectangle.Rectangle({
@@ -32,9 +32,10 @@ const track = new bg.Track(new rectangle.Rectangle({
     fillColor: new rgba.RGBA(196, 196, 196)
 }));
 // because typescript's weirdness, i cant directly put ChunkData or Rectangle 
-// ? Note sure if these will be needed 
+// ? Not sure if these will be needed 
 let filler = new draw.ChunkData([]);
 let filler2 = new rectangle.Rectangle({ x: 0, y: 0, width: 0, height: 0, outlineColor: new rgba.RGBA(0, 0, 0), fillColor: new rgba.RGBA(0, 0, 0) });
+let filler3 = new circle.Circle({ x: 0, y: 0, radius: 0, outlineColor: new rgba.RGBA(0, 0, 0), fillColor: new rgba.RGBA(0, 0, 0) });
 // event listeners 
 evt.EventCargo.onmousemovePackages.shipPackage(new evt.EventPackage("updateMouse", (e) => {
     mouseX = e.clientX;
@@ -58,16 +59,14 @@ function renderBackground(canvasRenderer, canvasRendererContext, background) {
     canvasRendererContext.strokeStyle = background;
     canvasRendererContext.fillRect(0, 0, canvasRenderer.width, canvasRenderer.height);
 }
-class Obstacle {
-}
-class Creature {
-}
-const Collision = {}; // handles the collisions 
+track.addCreature(new creature.Creature({
+    image: new circle.Circle({ x: 0, y: 0, radius: 10, outlineColor: new rgba.RGBA(0, 0, 0), fillColor: new rgba.RGBA(0, 0, 0) })
+}));
 function update() {
     renderBackground(canvas, ctx, backgroundColor.format());
     track.renderBackground(ctx);
-    track.renderFinishLine(ctx);
     track.onUpdate(drawHandler);
+    track.renderCreatures(ctx);
     // draw handler
     if (allowDrawing)
         drawHandler.onUpdate(mouseX, mouseY);

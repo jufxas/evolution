@@ -21,8 +21,12 @@ declare const mq: typeof import("./ts-utils/MyQuery")
 declare const draw: typeof import("./ts-utils/drawHandler")
 declare const rgba: typeof import("./ts-utils/rgba")
 declare const rectangle: typeof import("./ts-utils/rectangle")
+declare const circle: typeof import("./ts-utils/circle")
 declare const evt: typeof import("./ts-utils/eventHandler")
 declare const bg: typeof import ("./ts-utils/track")
+declare const creature: typeof import("./ts-utils/creature")
+declare const clh: typeof import("./ts-utils/collisionHandler")
+declare const dst: typeof import("./ts-utils/distanceCalc")
 
 
 // global components / boilerplate 
@@ -36,7 +40,7 @@ let frameCount = 0
 let backgroundColor =  new rgba.RGBA(100, 100, 255) 
 
 // draw handler 
-const drawHandler = new draw.DrawHandler()  
+const drawHandler = new draw.CompressedDrawHandler()
 let allowDrawing = true 
 
 // track 
@@ -50,15 +54,18 @@ const track = new bg.Track(new rectangle.Rectangle({
 }))
 
 // because typescript's weirdness, i cant directly put ChunkData or Rectangle 
-// ? Note sure if these will be needed 
+// ? Not sure if these will be needed 
 let filler = new draw.ChunkData([])
 type ChunkData = typeof filler 
 let filler2 = new rectangle.Rectangle({x: 0,y: 0, width: 0, height: 0, outlineColor: new rgba.RGBA(0,0,0), fillColor: new rgba.RGBA(0,0,0)})
+let filler3 = new circle.Circle({x: 0, y: 0, radius: 0, outlineColor: new rgba.RGBA(0,0,0), fillColor: new rgba.RGBA(0,0,0)})
 
-
+// just make DrawHandler have a compression mode 
 
 type Rectangle = typeof filler2 
 type DrawHandler = typeof drawHandler
+type RGBA = typeof filler2.outlineColor
+type Circle = typeof filler3
 
 
 // event listeners 
@@ -69,6 +76,7 @@ evt.EventCargo.onmousemovePackages.shipPackage(new evt.EventPackage("updateMouse
 evt.EventCargo.onmousedownPackages.shipPackage(new evt.EventPackage("callDrawFunction", () => {
     drawHandler.onMouseDownFunction()
 }))
+
 evt.EventCargo.onmouseupPackages.shipPackage(new evt.EventPackage("mouseUp", () => {
     drawHandler.onMouseUpFunction() 
 
@@ -79,11 +87,9 @@ evt.EventCargo.onkeyupPackages.shipPackage(new evt.EventPackage("keyUp", (e) => 
     if (e.key === "e") {
         allowDrawing = !allowDrawing
         mq.$("h1#allowDrawing").html(`allowDrawing: ${allowDrawing}`)
-    }
+    } 
+
 }))
-
-
-
 
 // utility functions 
 function renderBackground(canvasRenderer: HTMLCanvasElement, canvasRendererContext: CanvasRenderingContext2D,  background: string) {
@@ -92,26 +98,25 @@ function renderBackground(canvasRenderer: HTMLCanvasElement, canvasRendererConte
     canvasRendererContext.fillRect(0, 0, canvasRenderer.width, canvasRenderer.height)
 }
 
-class Obstacle {}
 
-
-
-class Creature {}
-const Collision = {}  // handles the collisions 
+track.addCreature(new creature.Creature({
+    image: new circle.Circle({x: 0, y: 0, radius: 10, outlineColor: new rgba.RGBA(0,0,0), fillColor: new rgba.RGBA(0,0,0)})
+}))
 
 function update() {
     renderBackground(canvas, ctx, backgroundColor.format())
     track.renderBackground(ctx)
-    track.renderFinishLine(ctx)
     track.onUpdate(drawHandler)
+    track.renderCreatures(ctx)
 
 
     // draw handler
     if (allowDrawing) drawHandler.onUpdate(mouseX, mouseY)
     drawHandler.renderRectangles(ctx)
     
-    
 }
+
+
 
 async function gameLoop() {
     while(true) {

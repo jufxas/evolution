@@ -63,6 +63,8 @@ class DocumentMethods {
  function docm() {
     return new DocumentMethods();
 }
+
+//jufSAVE
 /*  Examples
 $("canvas#canvas").onClick(() => {
     console.log("lol")
