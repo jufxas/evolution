@@ -19,17 +19,17 @@ git add .
 // if ever interested in canvas pixel manipulation: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas 
 
 
-declare const mq: typeof import("./ts-utils/MyQuery")
-declare const draw: typeof import("./ts-utils/drawHandler")
-declare const rgba: typeof import("./ts-utils/rgba")
-declare const rectangle: typeof import("./ts-utils/shapes/rectangle")
-declare const circle: typeof import("./ts-utils/shapes/circle")
-declare const evt: typeof import("./ts-utils/eventHandler")
-declare const bg: typeof import ("./ts-utils/track")
-declare const creature: typeof import("./ts-utils/creature")
-declare const clh: typeof import("./ts-utils/collisionHandler")
-declare const dst: typeof import("./ts-utils/distance")
-declare const line: typeof import("./ts-utils/shapes/line")
+declare const mq:           typeof import("./ts-utils/MyQuery")
+declare const draw:         typeof import("./ts-utils/drawHandler")
+declare const rgba:         typeof import("./ts-utils/rgba")
+declare const rectangle:    typeof import("./ts-utils/shapes/rectangle")
+declare const circle:       typeof import("./ts-utils/shapes/circle")
+declare const evt:          typeof import("./ts-utils/eventHandler")
+declare const bg:           typeof import("./ts-utils/track")
+declare const creature:     typeof import("./ts-utils/creature")
+declare const clh:          typeof import("./ts-utils/collisionHandler")
+declare const dst:          typeof import("./ts-utils/distance")
+declare const line:         typeof import("./ts-utils/shapes/line")
 
 
 // global components / boilerplate 
@@ -116,7 +116,7 @@ track.addCreature(new creature.Creature({
 function update() {
     renderBackground(canvas, ctx, backgroundColor.format())
     track.renderBackground(ctx)
-    track.onUpdate(drawHandler)
+    track.onUpdate(drawHandler, lineHandler)
     track.renderCreatures(ctx)
 
 

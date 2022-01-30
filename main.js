@@ -69,7 +69,7 @@ track.addCreature(new creature.Creature({
 function update() {
     renderBackground(canvas, ctx, backgroundColor.format());
     track.renderBackground(ctx);
-    track.onUpdate(drawHandler);
+    track.onUpdate(drawHandler, lineHandler);
     track.renderCreatures(ctx);
     // draw handler
     if (allowDrawing) {

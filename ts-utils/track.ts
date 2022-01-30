@@ -2,14 +2,19 @@
 // T{0, 0} -> Track coordinates (0, 0)
 
 import { Rectangle } from "./shapes/rectangle"
-import { ChunkData, ChunkCompressedData, DrawHandler, CompressedDrawHandler } from "./drawHandler"
+import { ChunkData, ChunkCompressedData, DrawHandler, CompressedDrawHandler, LineDrawHandler, LineChunks } from "./drawHandler"
 import { RGBA } from "./rgba"
 import { Creature } from "./creature"
 import { Circle } from "./shapes/circle"
+import { XY } from "./xy"
+
 export class Track {
     background: Rectangle
     private finishLine: Rectangle
     private obstacles: ChunkCompressedData[] = [] 
+    private obstacles2: LineChunks[] = []
+    private lineSeparator = 0 
+
     private checkForDrawingOnTrack = true 
     private runRace = false 
     private drawingSeparator = 0 
@@ -40,7 +45,7 @@ export class Track {
     }
 
     // adds data drawn onto the track into the obstacles array 
-    onUpdate(drawHandler: CompressedDrawHandler) {
+    onUpdate(drawHandler: CompressedDrawHandler, lineDrawHandler: LineDrawHandler) {
 
         if (!drawHandler.mouseWentDownAfterBeingUp || !this.checkForDrawingOnTrack) return 
 
@@ -49,7 +54,6 @@ export class Track {
             (this.background.y <= pixel.y && pixel.y <= this.background.y + this.background.height)
         )
         if (copy.length === 0 || copy.length - this.drawingSeparator === 0) return 
-
         
 
         let chunkData = new ChunkCompressedData(copy.slice(
@@ -58,8 +62,23 @@ export class Track {
         ))
 
         this.obstacles.push(chunkData)
-        this.drawingSeparator = copy.length
+        this.drawingSeparator = copy.length 
 
+        // ****************
+
+        let lineCopy = lineDrawHandler.copyLines()
+        if (lineCopy.length === 0 || lineCopy.length - this.lineSeparator === 0) return 
+
+        if (lineCopy[this.lineSeparator].x === -1) 
+            lineCopy = lineCopy.slice(this.lineSeparator + 1, lineCopy.length)
+        else 
+            lineCopy = lineCopy.slice(this.lineSeparator, lineCopy.length)
+
+
+        let lineChunkData = new LineChunks(lineCopy)
+
+        this.obstacles2.push(lineChunkData)
+        this.lineSeparator = lineCopy.length
         
     }
 
