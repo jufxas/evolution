@@ -19,15 +19,17 @@ let mouseX = 0;
 let mouseY = 0;
 let frameCount = 0;
 let backgroundColor = new rgba.RGBA(100, 100, 255);
+// ! WHAT TO DO: re work on the draw system into drawing lines instead of squares because collision detection for line & circle is cheaper 
 // draw handler 
 const drawHandler = new draw.CompressedDrawHandler();
 let allowDrawing = true;
+const lineHandler = new draw.LineDrawHandler();
 // track 
 const track = new bg.Track(new rectangle.Rectangle({
     x: (canvas.width / 2) - 350,
     y: 50,
     width: 700,
-    height: 800,
+    height: 700,
     outlineColor: new rgba.RGBA(0, 0, 0),
     fillColor: new rgba.RGBA(196, 196, 196)
 }));
@@ -43,9 +45,11 @@ evt.EventCargo.onmousemovePackages.shipPackage(new evt.EventPackage("updateMouse
 }));
 evt.EventCargo.onmousedownPackages.shipPackage(new evt.EventPackage("callDrawFunction", () => {
     drawHandler.onMouseDownFunction();
+    lineHandler.onMouseDownFunction();
 }));
 evt.EventCargo.onmouseupPackages.shipPackage(new evt.EventPackage("mouseUp", () => {
     drawHandler.onMouseUpFunction();
+    lineHandler.onMouseUpFunction();
 }));
 evt.EventCargo.onkeyupPackages.shipPackage(new evt.EventPackage("keyUp", (e) => {
     if (e.key === "e") {
@@ -68,9 +72,12 @@ function update() {
     track.onUpdate(drawHandler);
     track.renderCreatures(ctx);
     // draw handler
-    if (allowDrawing)
+    if (allowDrawing) {
         drawHandler.onUpdate(mouseX, mouseY);
-    drawHandler.renderRectangles(ctx);
+        lineHandler.onUpdate(mouseX, mouseY);
+    }
+    // drawHandler.renderRectangles(ctx)
+    lineHandler.renderLines(ctx);
 }
 function gameLoop() {
     return __awaiter(this, void 0, void 0, function* () {

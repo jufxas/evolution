@@ -1,6 +1,7 @@
-import { Rectangle } from "./rectangle"
+import { Rectangle, drawRectangle } from "./shapes/rectangle"
 import { RGBA } from "./rgba";
 import { XY } from "./xy"
+import { drawLine, Line } from "./shapes/line";
 
 export class DrawHandler {
     private rectangleHolder: Rectangle[]  = []
@@ -102,13 +103,13 @@ export class ChunkData {
         
         this.width = Math.abs(maxX - minX) + pixelWidth
         this.height = Math.abs(maxY - minY) + pixelHeight
-        this.topLeft = {x: minX, y: minY}
+        this.topLeft = new XY(minX, minY)
 
     }
 }
 
 export class CompressedDrawHandler {
-    private rectangleCoordHolder: XY[]  = []
+    rectangleCoordHolder: XY[]  = []
     private isMouseDown = false 
     private ignore = false 
     mouseWentDownAfterBeingUp: boolean | undefined = undefined; 
@@ -141,10 +142,7 @@ export class CompressedDrawHandler {
 
         if (this.isMouseDown) {
             
-            this.rectangleCoordHolder.push({
-                x: mouseX,
-                y: mouseY,
-            });
+            this.rectangleCoordHolder.push(new XY(mouseX, mouseY));
 
 
             if (this.rectangleCoordHolder.length >= 2 && this.ignore === false ) {
@@ -161,10 +159,10 @@ export class CompressedDrawHandler {
                 deltaY /= numberOfSteps
     
                 for (let k = 0; k < numberOfSteps; k++) {
-                    this.rectangleCoordHolder.push({
-                        x: rectangle1.x + k*deltaX,
-                        y: rectangle1.y + k*deltaY,
-                    })
+                    this.rectangleCoordHolder.push(
+                        new XY(rectangle1.x + k*deltaX, rectangle1.y + k*deltaY)
+                    )
+                    
                 }
                 
             }
@@ -204,6 +202,64 @@ export class ChunkCompressedData {
         
         this.width = Math.abs(maxX - minX) + (pixelWidth || 3)
         this.height = Math.abs(maxY - minY) + (pixelHeight || 3)
-        this.topLeft = {x: minX, y: minY}
+        this.topLeft = new XY(minX, minY)
     }
+}
+
+export class LineDrawHandler {
+    pointHolder: XY[] = []
+    mouseWentDownAfterBeingUp: boolean | undefined = undefined
+    color: RGBA
+    startedLineButUnfinished = false 
+    isMouseDown = false 
+    mouseClicked = false 
+
+    constructor(color?: RGBA) {
+        this.color = color || new RGBA(255,255,255)
+    }
+    
+    onUpdate(mouseX: number, mouseY: number) {
+
+        if (this.mouseClicked) {
+            if (!this.startedLineButUnfinished) {
+                this.pointHolder.push(new XY(mouseX, mouseY))
+                this.startedLineButUnfinished = true 
+            } else {
+                this.startedLineButUnfinished = false 
+            }
+
+            if (this.isMouseDown) this.mouseClicked = false 
+        }
+
+
+        if (this.startedLineButUnfinished) {
+            if (this.pointHolder.length === 1 ) {
+                this.pointHolder.push(new XY(mouseX, mouseY))
+            } else {
+                this.pointHolder[this.pointHolder.length - 1] = new XY(mouseX, mouseY)
+            }
+        }   
+    }
+
+    renderLines(canvasRendererContext: CanvasRenderingContext2D) {
+        for (let i = 0; i < this.pointHolder.length / 2 ; i++) {
+            if (this.pointHolder.length % 2 !== 0 && (i*2+1) === this.pointHolder.length) {
+
+            }  else 
+            drawLine(canvasRendererContext, this.pointHolder[i*2], this.pointHolder[i*2+1], this.color)
+        }
+    }
+
+    onMouseDownFunction() {
+        this.mouseClicked = true 
+        this.isMouseDown = true 
+        this.mouseWentDownAfterBeingUp = false 
+
+    }
+    onMouseUpFunction() {
+        this.mouseClicked = false 
+        this.isMouseDown = false 
+        if (this.mouseWentDownAfterBeingUp === false) this.mouseWentDownAfterBeingUp = true 
+    }
+
 }

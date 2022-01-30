@@ -1,4 +1,4 @@
-import { RGBA } from "./rgba"
+import { RGBA } from "../rgba"
 export class Rectangle {
     x: number 
     y: number 
@@ -23,4 +23,10 @@ export class Rectangle {
         canvasRendererContext.fillRect(this.x, this.y, this.width, this.height)
 
     }
+}
+export function drawRectangle(canvasRendererContext: CanvasRenderingContext2D, rectangle: Rectangle) {
+    canvasRendererContext.strokeStyle = rectangle.outlineColor.format()
+    canvasRendererContext.fillStyle = rectangle.fillColor.format()
+    canvasRendererContext.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height)
+
 }

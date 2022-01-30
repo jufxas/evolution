@@ -1,6 +1,8 @@
-import { Circle } from "./circle"
+import { Circle } from "./shapes/circle"
 import { RGBA } from "./rgba"
 import { CollisionHandler } from "./collisionHandler"
+import { DistanceCalculator } from "./distance"
+import { ChunkCompressedData } from "./drawHandler"
 
 export class Creature {
     intelligence: number                       // 1 to 100
@@ -10,7 +12,7 @@ export class Creature {
     constructor(data: {intelligence?: number, maxSpeed?: number, sight?: number, image?: Circle}) {
         this.intelligence = data.intelligence || 1 
         this.maxSpeed = data.maxSpeed || 1 
-        this.sight = data.sight || 1 
+        this.sight = data.sight || 1
         this.image = data.image || new Circle({x:50,y:50,radius:5,outlineColor: new RGBA(0,0,0), fillColor: new RGBA(0,0,0)})
     }
     move(direction: "up" | "down" | "left" | "right", magnitude: number ) {
@@ -29,15 +31,17 @@ export class Creature {
                 break; 
         }
     }
-    search(trackInfo: {obstacles: any[], background: Rectangle ,finishLine: Rectangle}) {
-        let sightCircle = new Circle({
-            x: this.image.x, 
-            y: this.image.y, 
-            radius: this.image.radius + this.sight, 
-            outlineColor: new RGBA(0, 0, 0, 0), 
-            fillColor: new RGBA(0,0,0,0)
-        })
-        
+    search(trackInfo: {obstacles: ChunkCompressedData[], background: Rectangle ,finishLine: Rectangle}) {
+
+        // wall searching 
+        let wallDistances = DistanceCalculator.circleInsideBoxAndBoxEdges(this.image, trackInfo.background, this.sight)
+        console.log(wallDistances)
+
+        // obstacle searching 
+        let v = DistanceCalculator.circleAndArrayOfBoxCoords(this.image, trackInfo.obstacles[0].coordData, trackInfo.obstacles[0].width!, trackInfo.obstacles[0].height!, this.sight)
+
+        console.log(v)
+
     }
     think() {
         // decides what to do: move, search, memorize anything {omg it should have a memory of sorts}

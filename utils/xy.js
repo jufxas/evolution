@@ -4,6 +4,9 @@ class XY {
         this.x = x;
         this.y = y;
     }
+    format() {
+        return (this.x, this.y);
+    }
 }
 
 //jufSAVE

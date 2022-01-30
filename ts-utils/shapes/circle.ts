@@ -1,5 +1,5 @@
 
-import { RGBA } from "./rgba"
+import { RGBA } from "../rgba"
 
 export class Circle {
     x: number 

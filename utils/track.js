@@ -3,7 +3,7 @@
 // T{0, 0} -> Track coordinates (0, 0)
 class Track {
     constructor(background) {
-        this.obstacles = []; //  it's really  ChunkData[] | ChunkCompressedData[]
+        this.obstacles = [];
         this.checkForDrawingOnTrack = true;
         this.runRace = false;
         this.drawingSeparator = 0;
@@ -31,26 +31,15 @@ class Track {
     }
     // adds data drawn onto the track into the obstacles array 
     onUpdate(drawHandler) {
-        if (!drawHandler.mouseWentDownAfterBeingUp && this.checkForDrawingOnTrack)
+        if (!drawHandler.mouseWentDownAfterBeingUp || !this.checkForDrawingOnTrack)
             return;
-        if (drawHandler instanceof DrawHandler) {
-            let copy = drawHandler.copyDrawData().filter(pixel => (this.background.x <= pixel.x && pixel.x <= this.background.x + this.background.width) &&
-                (this.background.y <= pixel.y && pixel.y <= this.background.y + this.background.height));
-            if (copy.length === 0 || copy.length - this.drawingSeparator === 0)
-                return;
-            let chunkData = new ChunkData(copy.slice(this.drawingSeparator, copy.length));
-            this.obstacles.push(chunkData);
-            this.drawingSeparator = copy.length;
-        }
-        else if (drawHandler instanceof CompressedDrawHandler) {
-            let copy = drawHandler.copyDrawData().filter(pixel => (this.background.x <= pixel.x && pixel.x <= this.background.x + this.background.width) &&
-                (this.background.y <= pixel.y && pixel.y <= this.background.y + this.background.height));
-            if (copy.length === 0 || copy.length - this.drawingSeparator === 0)
-                return;
-            let chunkData = new ChunkCompressedData(copy.slice(this.drawingSeparator, copy.length));
-            this.obstacles.push(chunkData);
-            this.drawingSeparator = copy.length;
-        }
+        let copy = drawHandler.copyDrawData().filter(pixel => (this.background.x <= pixel.x && pixel.x <= this.background.x + this.background.width) &&
+            (this.background.y <= pixel.y && pixel.y <= this.background.y + this.background.height));
+        if (copy.length === 0 || copy.length - this.drawingSeparator === 0)
+            return;
+        let chunkData = new ChunkCompressedData(copy.slice(this.drawingSeparator, copy.length));
+        this.obstacles.push(chunkData);
+        this.drawingSeparator = copy.length;
     }
     // A point on the track is transformed such that the top left is treated as (0,0) [ which is relative to itself ] instead of (topLeft.x, topLeft.y) [ which is relative to the canvas ]
     relatePointToTrack(coord) {

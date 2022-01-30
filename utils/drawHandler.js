@@ -84,7 +84,7 @@ class ChunkData {
         let maxY = Math.max(...pixelYValues);
         this.width = Math.abs(maxX - minX) + pixelWidth;
         this.height = Math.abs(maxY - minY) + pixelHeight;
-        this.topLeft = { x: minX, y: minY };
+        this.topLeft = new XY(minX, minY);
     }
 }
 class CompressedDrawHandler {
@@ -116,10 +116,7 @@ class CompressedDrawHandler {
             this.mouseWentDownAfterBeingUp = false;
         }
         if (this.isMouseDown) {
-            this.rectangleCoordHolder.push({
-                x: mouseX,
-                y: mouseY,
-            });
+            this.rectangleCoordHolder.push(new XY(mouseX, mouseY));
             if (this.rectangleCoordHolder.length >= 2 && this.ignore === false) {
                 // last 2 elements 
                 let rectangle1 = this.rectangleCoordHolder[this.rectangleCoordHolder.length - 2];
@@ -130,10 +127,7 @@ class CompressedDrawHandler {
                 deltaX /= numberOfSteps;
                 deltaY /= numberOfSteps;
                 for (let k = 0; k < numberOfSteps; k++) {
-                    this.rectangleCoordHolder.push({
-                        x: rectangle1.x + k * deltaX,
-                        y: rectangle1.y + k * deltaY,
-                    });
+                    this.rectangleCoordHolder.push(new XY(rectangle1.x + k * deltaX, rectangle1.y + k * deltaY));
                 }
             }
             if (this.ignore === true)
@@ -166,7 +160,58 @@ class ChunkCompressedData {
         let maxY = Math.max(...coordYValues);
         this.width = Math.abs(maxX - minX) + (pixelWidth || 3);
         this.height = Math.abs(maxY - minY) + (pixelHeight || 3);
-        this.topLeft = { x: minX, y: minY };
+        this.topLeft = new XY(minX, minY);
+    }
+}
+class LineDrawHandler {
+    constructor(color) {
+        this.pointHolder = [];
+        this.mouseWentDownAfterBeingUp = undefined;
+        this.startedLineButUnfinished = false;
+        this.isMouseDown = false;
+        this.mouseClicked = false;
+        this.color = color || new RGBA(255, 255, 255);
+    }
+    onUpdate(mouseX, mouseY) {
+        if (this.mouseClicked) {
+            if (!this.startedLineButUnfinished) {
+                console.log("pushed");
+                this.pointHolder.push(new XY(mouseX, mouseY));
+                this.startedLineButUnfinished = true;
+            }
+            else {
+                this.startedLineButUnfinished = false;
+            }
+            if (this.isMouseDown)
+                this.mouseClicked = false;
+        }
+        if (this.startedLineButUnfinished) {
+            if (this.pointHolder.length === 1) {
+                this.pointHolder.push(new XY(mouseX, mouseY));
+            }
+            else {
+                this.pointHolder[this.pointHolder.length - 1] = new XY(mouseX, mouseY);
+            }
+        }
+    }
+    renderLines(canvasRendererContext) {
+        for (let i = 0; i < this.pointHolder.length / 2; i++) {
+            if (this.pointHolder.length % 2 !== 0 && (i * 2 + 1) === this.pointHolder.length) {
+            }
+            else
+                (0, drawLine)(canvasRendererContext, this.pointHolder[i * 2], this.pointHolder[i * 2 + 1], this.color);
+        }
+    }
+    onMouseDownFunction() {
+        this.mouseClicked = true;
+        this.isMouseDown = true;
+        this.mouseWentDownAfterBeingUp = false;
+    }
+    onMouseUpFunction() {
+        this.mouseClicked = false;
+        this.isMouseDown = false;
+        if (this.mouseWentDownAfterBeingUp === false)
+            this.mouseWentDownAfterBeingUp = true;
     }
 }
 
@@ -175,5 +220,6 @@ var draw = {
     DrawHandler: DrawHandler, 
     CompressedDrawHandler: CompressedDrawHandler,
     ChunkCompressedData: ChunkCompressedData,
-    ChunkData: ChunkData
+    ChunkData: ChunkData,
+    LineDrawHandler: LineDrawHandler, 
 }

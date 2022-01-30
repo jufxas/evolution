@@ -1,15 +1,15 @@
 // C{0, 0} -> Canvas Coordinates (0, 0) 
 // T{0, 0} -> Track coordinates (0, 0)
 
-import { Rectangle } from "./rectangle"
+import { Rectangle } from "./shapes/rectangle"
 import { ChunkData, ChunkCompressedData, DrawHandler, CompressedDrawHandler } from "./drawHandler"
 import { RGBA } from "./rgba"
 import { Creature } from "./creature"
-import { Circle } from "./circle"
+import { Circle } from "./shapes/circle"
 export class Track {
     background: Rectangle
     private finishLine: Rectangle
-    private obstacles: any = [] //  it's really  ChunkData[] | ChunkCompressedData[]
+    private obstacles: ChunkCompressedData[] = [] 
     private checkForDrawingOnTrack = true 
     private runRace = false 
     private drawingSeparator = 0 
@@ -40,47 +40,27 @@ export class Track {
     }
 
     // adds data drawn onto the track into the obstacles array 
-    onUpdate(drawHandler: DrawHandler | CompressedDrawHandler) {
+    onUpdate(drawHandler: CompressedDrawHandler) {
 
-        if (!drawHandler.mouseWentDownAfterBeingUp && this.checkForDrawingOnTrack) return 
+        if (!drawHandler.mouseWentDownAfterBeingUp || !this.checkForDrawingOnTrack) return 
 
-        if (drawHandler instanceof DrawHandler) {
+        let copy = drawHandler.copyDrawData().filter(pixel => 
+            (this.background.x <= pixel.x && pixel.x <= this.background.x + this.background.width) && 
+            (this.background.y <= pixel.y && pixel.y <= this.background.y + this.background.height)
+        )
+        if (copy.length === 0 || copy.length - this.drawingSeparator === 0) return 
 
-                let copy = drawHandler.copyDrawData().filter(pixel => 
-                    (this.background.x <= pixel.x && pixel.x <= this.background.x + this.background.width) && 
-                    (this.background.y <= pixel.y && pixel.y <= this.background.y + this.background.height)
-                )
-                if (copy.length === 0 || copy.length - this.drawingSeparator === 0) return 
+        
 
-                
+        let chunkData = new ChunkCompressedData(copy.slice(
+            this.drawingSeparator, 
+            copy.length 
+        ))
 
-                let chunkData = new ChunkData(copy.slice(
-                    this.drawingSeparator, 
-                    copy.length 
-                ))
+        this.obstacles.push(chunkData)
+        this.drawingSeparator = copy.length
 
-                this.obstacles.push(chunkData)
-                this.drawingSeparator = copy.length
-            
-        } else if (drawHandler instanceof CompressedDrawHandler) {
-
-                let copy = drawHandler.copyDrawData().filter(pixel => 
-                    (this.background.x <= pixel.x && pixel.x <= this.background.x + this.background.width) && 
-                    (this.background.y <= pixel.y && pixel.y <= this.background.y + this.background.height)
-                )
-                if (copy.length === 0 || copy.length - this.drawingSeparator === 0) return 
-
-                
-
-                let chunkData = new ChunkCompressedData(copy.slice(
-                    this.drawingSeparator, 
-                    copy.length 
-                ))
-
-                this.obstacles.push(chunkData)
-                this.drawingSeparator = copy.length
-            
-        }
+        
     }
 
     // A point on the track is transformed such that the top left is treated as (0,0) [ which is relative to itself ] instead of (topLeft.x, topLeft.y) [ which is relative to the canvas ]
@@ -114,7 +94,7 @@ export class Track {
         }
     }
 
-    returnTrackInfo() {
+    returnTrackInfo(): {obstacles: ChunkCompressedData[], background: Rectangle ,finishLine: Rectangle} {
         return {
             obstacles: this.obstacles, 
             background: this.background, 

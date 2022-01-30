@@ -16,17 +16,20 @@ git rm -rf --cached .
 git add .
 */ 
 
+// if ever interested in canvas pixel manipulation: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas 
+
 
 declare const mq: typeof import("./ts-utils/MyQuery")
 declare const draw: typeof import("./ts-utils/drawHandler")
 declare const rgba: typeof import("./ts-utils/rgba")
-declare const rectangle: typeof import("./ts-utils/rectangle")
-declare const circle: typeof import("./ts-utils/circle")
+declare const rectangle: typeof import("./ts-utils/shapes/rectangle")
+declare const circle: typeof import("./ts-utils/shapes/circle")
 declare const evt: typeof import("./ts-utils/eventHandler")
 declare const bg: typeof import ("./ts-utils/track")
 declare const creature: typeof import("./ts-utils/creature")
 declare const clh: typeof import("./ts-utils/collisionHandler")
-declare const dst: typeof import("./ts-utils/distanceCalc")
+declare const dst: typeof import("./ts-utils/distance")
+declare const line: typeof import("./ts-utils/shapes/line")
 
 
 // global components / boilerplate 
@@ -39,16 +42,21 @@ let mouseY = 0
 let frameCount = 0
 let backgroundColor =  new rgba.RGBA(100, 100, 255) 
 
+// ! WHAT TO DO: re work on the draw system into drawing lines instead of squares because collision detection for line & circle is cheaper 
+
+
 // draw handler 
 const drawHandler = new draw.CompressedDrawHandler()
 let allowDrawing = true 
+
+const lineHandler = new draw.LineDrawHandler()
 
 // track 
 const track = new bg.Track(new rectangle.Rectangle({
     x: (canvas.width / 2) - 350,
     y: 50, 
     width: 700, 
-    height: 800, 
+    height: 700, 
     outlineColor: new rgba.RGBA(0,0,0), 
     fillColor: new rgba.RGBA(196,196,196)
 }))
@@ -75,10 +83,12 @@ evt.EventCargo.onmousemovePackages.shipPackage(new evt.EventPackage("updateMouse
 }))
 evt.EventCargo.onmousedownPackages.shipPackage(new evt.EventPackage("callDrawFunction", () => {
     drawHandler.onMouseDownFunction()
+    lineHandler.onMouseDownFunction()
 }))
 
 evt.EventCargo.onmouseupPackages.shipPackage(new evt.EventPackage("mouseUp", () => {
     drawHandler.onMouseUpFunction() 
+    lineHandler.onMouseUpFunction()
 
 }))
 
@@ -111,8 +121,12 @@ function update() {
 
 
     // draw handler
-    if (allowDrawing) drawHandler.onUpdate(mouseX, mouseY)
-    drawHandler.renderRectangles(ctx)
+    if (allowDrawing) {
+        drawHandler.onUpdate(mouseX, mouseY)
+        lineHandler.onUpdate(mouseX, mouseY)
+    }
+    // drawHandler.renderRectangles(ctx)
+    lineHandler.renderLines(ctx)
     
 }
 
