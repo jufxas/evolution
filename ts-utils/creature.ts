@@ -2,7 +2,8 @@ import { Circle } from "./shapes/circle"
 import { RGBA } from "./rgba"
 import { CollisionHandler } from "./collisionHandler"
 import { DistanceCalculator } from "./distance"
-import { ChunkCompressedData } from "./drawHandler"
+import { LineChunks } from "./drawHandler"
+import { Rectangle } from "./shapes/rectangle"
 
 export class Creature {
     intelligence: number                       // 1 to 100
@@ -31,14 +32,14 @@ export class Creature {
                 break; 
         }
     }
-    search(trackInfo: {obstacles: ChunkCompressedData[], background: Rectangle ,finishLine: Rectangle}) {
+    search(trackInfo: {obstacles: LineChunks[], background: Rectangle ,finishLine: Rectangle}) {
 
         // wall searching 
         let wallDistances = DistanceCalculator.circleInsideBoxAndBoxEdges(this.image, trackInfo.background, this.sight)
         console.log(wallDistances)
 
         // obstacle searching 
-        let v = DistanceCalculator.circleAndArrayOfBoxCoords(this.image, trackInfo.obstacles[0].coordData, trackInfo.obstacles[0].width!, trackInfo.obstacles[0].height!, this.sight)
+        let v = DistanceCalculator.circleAndArrayOfBoxCoords(this.image, trackInfo.obstacles[0].lineCoords, trackInfo.obstacles[0].width!, trackInfo.obstacles[0].height!, this.sight)
 
         console.log(v)
 

@@ -21,9 +21,8 @@ let frameCount = 0;
 let backgroundColor = new rgba.RGBA(100, 100, 255);
 // ! WHAT TO DO: re work on the draw system into drawing lines instead of squares because collision detection for line & circle is cheaper 
 // draw handler 
-const drawHandler = new draw.CompressedDrawHandler();
+const lineDrawHandler = new draw.LineDrawHandler();
 let allowDrawing = true;
-const lineHandler = new draw.LineDrawHandler();
 // track 
 const track = new bg.Track(new rectangle.Rectangle({
     x: (canvas.width / 2) - 350,
@@ -33,23 +32,16 @@ const track = new bg.Track(new rectangle.Rectangle({
     outlineColor: new rgba.RGBA(0, 0, 0),
     fillColor: new rgba.RGBA(196, 196, 196)
 }));
-// because typescript's weirdness, i cant directly put ChunkData or Rectangle 
-// ? Not sure if these will be needed 
-let filler = new draw.ChunkData([]);
-let filler2 = new rectangle.Rectangle({ x: 0, y: 0, width: 0, height: 0, outlineColor: new rgba.RGBA(0, 0, 0), fillColor: new rgba.RGBA(0, 0, 0) });
-let filler3 = new circle.Circle({ x: 0, y: 0, radius: 0, outlineColor: new rgba.RGBA(0, 0, 0), fillColor: new rgba.RGBA(0, 0, 0) });
 // event listeners 
 evt.EventCargo.onmousemovePackages.shipPackage(new evt.EventPackage("updateMouse", (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
 }));
 evt.EventCargo.onmousedownPackages.shipPackage(new evt.EventPackage("callDrawFunction", () => {
-    drawHandler.onMouseDownFunction();
-    lineHandler.onMouseDownFunction();
+    lineDrawHandler.onMouseDownFunction();
 }));
 evt.EventCargo.onmouseupPackages.shipPackage(new evt.EventPackage("mouseUp", () => {
-    drawHandler.onMouseUpFunction();
-    lineHandler.onMouseUpFunction();
+    lineDrawHandler.onMouseUpFunction();
 }));
 evt.EventCargo.onkeyupPackages.shipPackage(new evt.EventPackage("keyUp", (e) => {
     if (e.key === "e") {
@@ -69,15 +61,14 @@ track.addCreature(new creature.Creature({
 function update() {
     renderBackground(canvas, ctx, backgroundColor.format());
     track.renderBackground(ctx);
-    track.onUpdate(drawHandler, lineHandler);
+    track.onUpdate(lineDrawHandler);
     track.renderCreatures(ctx);
     // draw handler
     if (allowDrawing) {
-        drawHandler.onUpdate(mouseX, mouseY);
-        lineHandler.onUpdate(mouseX, mouseY);
+        lineDrawHandler.onUpdate(mouseX, mouseY);
     }
     // drawHandler.renderRectangles(ctx)
-    lineHandler.renderLines(ctx);
+    lineDrawHandler.renderLines(ctx);
 }
 function gameLoop() {
     return __awaiter(this, void 0, void 0, function* () {

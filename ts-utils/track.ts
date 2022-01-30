@@ -2,7 +2,7 @@
 // T{0, 0} -> Track coordinates (0, 0)
 
 import { Rectangle } from "./shapes/rectangle"
-import { ChunkData, ChunkCompressedData, DrawHandler, CompressedDrawHandler, LineDrawHandler, LineChunks } from "./drawHandler"
+import { LineDrawHandler, LineChunks } from "./drawHandler"
 import { RGBA } from "./rgba"
 import { Creature } from "./creature"
 import { Circle } from "./shapes/circle"
@@ -11,13 +11,10 @@ import { XY } from "./xy"
 export class Track {
     background: Rectangle
     private finishLine: Rectangle
-    private obstacles: ChunkCompressedData[] = [] 
-    private obstacles2: LineChunks[] = []
+    private obstacles: LineChunks[] = []
     private lineSeparator = 0 
-
     private checkForDrawingOnTrack = true 
     private runRace = false 
-    private drawingSeparator = 0 
     private topLeft: {x: number, y: number}
     creatures: Creature[] = []
     private margin = 10
@@ -45,26 +42,7 @@ export class Track {
     }
 
     // adds data drawn onto the track into the obstacles array 
-    onUpdate(drawHandler: CompressedDrawHandler, lineDrawHandler: LineDrawHandler) {
-
-        if (!drawHandler.mouseWentDownAfterBeingUp || !this.checkForDrawingOnTrack) return 
-
-        let copy = drawHandler.copyDrawData().filter(pixel => 
-            (this.background.x <= pixel.x && pixel.x <= this.background.x + this.background.width) && 
-            (this.background.y <= pixel.y && pixel.y <= this.background.y + this.background.height)
-        )
-        if (copy.length === 0 || copy.length - this.drawingSeparator === 0) return 
-        
-
-        let chunkData = new ChunkCompressedData(copy.slice(
-            this.drawingSeparator, 
-            copy.length 
-        ))
-
-        this.obstacles.push(chunkData)
-        this.drawingSeparator = copy.length 
-
-        // ****************
+    onUpdate(lineDrawHandler: LineDrawHandler) {
 
         let lineCopy = lineDrawHandler.copyLines()
         if (lineCopy.length === 0 || lineCopy.length - this.lineSeparator === 0) return 
@@ -77,7 +55,7 @@ export class Track {
 
         let lineChunkData = new LineChunks(lineCopy)
 
-        this.obstacles2.push(lineChunkData)
+        this.obstacles.push(lineChunkData)
         this.lineSeparator = lineCopy.length
         
     }
@@ -113,7 +91,7 @@ export class Track {
         }
     }
 
-    returnTrackInfo(): {obstacles: ChunkCompressedData[], background: Rectangle ,finishLine: Rectangle} {
+    returnTrackInfo(): {obstacles: LineChunks[], background: Rectangle ,finishLine: Rectangle} {
         return {
             obstacles: this.obstacles, 
             background: this.background, 

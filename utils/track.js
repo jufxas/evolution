@@ -4,11 +4,9 @@
 class Track {
     constructor(background) {
         this.obstacles = [];
-        this.obstacles2 = [];
         this.lineSeparator = 0;
         this.checkForDrawingOnTrack = true;
         this.runRace = false;
-        this.drawingSeparator = 0;
         this.creatures = [];
         this.margin = 10;
         this.background = background;
@@ -32,28 +30,16 @@ class Track {
         this.finishLine.drawRectangle(canvasRendererContext);
     }
     // adds data drawn onto the track into the obstacles array 
-    onUpdate(drawHandler, lineDrawHandler) {
-        if (!drawHandler.mouseWentDownAfterBeingUp || !this.checkForDrawingOnTrack)
-            return;
-        let copy = drawHandler.copyDrawData().filter(pixel => (this.background.x <= pixel.x && pixel.x <= this.background.x + this.background.width) &&
-            (this.background.y <= pixel.y && pixel.y <= this.background.y + this.background.height));
-        if (copy.length === 0 || copy.length - this.drawingSeparator === 0)
-            return;
-        let chunkData = new ChunkCompressedData(copy.slice(this.drawingSeparator, copy.length));
-        this.obstacles.push(chunkData);
-        this.drawingSeparator = copy.length;
-        // ****************
+    onUpdate(lineDrawHandler) {
         let lineCopy = lineDrawHandler.copyLines();
         if (lineCopy.length === 0 || lineCopy.length - this.lineSeparator === 0)
             return;
-        if (lineCopy[this.lineSeparator].x === -1) {
+        if (lineCopy[this.lineSeparator].x === -1)
             lineCopy = lineCopy.slice(this.lineSeparator + 1, lineCopy.length);
-        }
         else
             lineCopy = lineCopy.slice(this.lineSeparator, lineCopy.length);
-        // if (lineCopy[0].x === -1) lineCopy = lineCopy.slice(1)
         let lineChunkData = new LineChunks(lineCopy);
-        this.obstacles2.push(lineChunkData);
+        this.obstacles.push(lineChunkData);
         this.lineSeparator = lineCopy.length;
     }
     // A point on the track is transformed such that the top left is treated as (0,0) [ which is relative to itself ] instead of (topLeft.x, topLeft.y) [ which is relative to the canvas ]

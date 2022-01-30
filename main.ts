@@ -37,7 +37,7 @@ const canvas = document.getElementById('canvas') as HTMLCanvasElement
 const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
 const timer = (ms: number) => new Promise(res => setTimeout(res, ms))
 const FPS = 30
-let mouseX = 0
+let mouseX = 0 
 let mouseY = 0
 let frameCount = 0
 let backgroundColor =  new rgba.RGBA(100, 100, 255) 
@@ -46,10 +46,8 @@ let backgroundColor =  new rgba.RGBA(100, 100, 255)
 
 
 // draw handler 
-const drawHandler = new draw.CompressedDrawHandler()
+const lineDrawHandler = new draw.LineDrawHandler()
 let allowDrawing = true 
-
-const lineHandler = new draw.LineDrawHandler()
 
 // track 
 const track = new bg.Track(new rectangle.Rectangle({
@@ -61,34 +59,20 @@ const track = new bg.Track(new rectangle.Rectangle({
     fillColor: new rgba.RGBA(196,196,196)
 }))
 
-// because typescript's weirdness, i cant directly put ChunkData or Rectangle 
-// ? Not sure if these will be needed 
-let filler = new draw.ChunkData([])
-type ChunkData = typeof filler 
-let filler2 = new rectangle.Rectangle({x: 0,y: 0, width: 0, height: 0, outlineColor: new rgba.RGBA(0,0,0), fillColor: new rgba.RGBA(0,0,0)})
-let filler3 = new circle.Circle({x: 0, y: 0, radius: 0, outlineColor: new rgba.RGBA(0,0,0), fillColor: new rgba.RGBA(0,0,0)})
 
-// just make DrawHandler have a compression mode 
-
-type Rectangle = typeof filler2 
-type DrawHandler = typeof drawHandler
-type RGBA = typeof filler2.outlineColor
-type Circle = typeof filler3
 
 
 // event listeners 
 evt.EventCargo.onmousemovePackages.shipPackage(new evt.EventPackage("updateMouse", (e) => {
     mouseX = e.clientX
-    mouseY = e.clientY
+    mouseY = e.clientY 
 }))
 evt.EventCargo.onmousedownPackages.shipPackage(new evt.EventPackage("callDrawFunction", () => {
-    drawHandler.onMouseDownFunction()
-    lineHandler.onMouseDownFunction()
+    lineDrawHandler.onMouseDownFunction()
 }))
 
 evt.EventCargo.onmouseupPackages.shipPackage(new evt.EventPackage("mouseUp", () => {
-    drawHandler.onMouseUpFunction() 
-    lineHandler.onMouseUpFunction()
+    lineDrawHandler.onMouseUpFunction()
 
 }))
 
@@ -116,17 +100,16 @@ track.addCreature(new creature.Creature({
 function update() {
     renderBackground(canvas, ctx, backgroundColor.format())
     track.renderBackground(ctx)
-    track.onUpdate(drawHandler, lineHandler)
+    track.onUpdate(lineDrawHandler)
     track.renderCreatures(ctx)
 
 
     // draw handler
     if (allowDrawing) {
-        drawHandler.onUpdate(mouseX, mouseY)
-        lineHandler.onUpdate(mouseX, mouseY)
+        lineDrawHandler.onUpdate(mouseX, mouseY)
     }
     // drawHandler.renderRectangles(ctx)
-    lineHandler.renderLines(ctx)
+    lineDrawHandler.renderLines(ctx)
     
 }
 
