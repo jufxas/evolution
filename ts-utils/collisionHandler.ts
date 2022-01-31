@@ -1,5 +1,7 @@
 import { Rectangle } from "./shapes/rectangle"
 import { Circle } from "./shapes/circle"
+import { XY } from "./xy"
+import { VectorOperations } from "./shapes/line"
 
 // a family of functions that handles certain situations to check for collisions. if a collision function is called and returns true, there was a collision and it's up to you to handle what happens afterward.  
 
@@ -29,5 +31,8 @@ export const CollisionHandler = {
             ( (circle.y - circle.radius >= rectangle.y + rectangle.height) && (circle.y - circle.radius <= rectangle.y + rectangle.height) )
 
         )
-    }
+    },
+    circleAndArrayOfLineCoords: function(circle: Circle, lineCoords: XY[], maxDistance?: number) {
+        
+    },
 }

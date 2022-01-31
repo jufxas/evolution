@@ -10,3 +10,6 @@ class XY {
 }
 
 //jufSAVE
+var xy = {
+    XY: XY 
+}

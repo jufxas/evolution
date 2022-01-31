@@ -27,8 +27,9 @@ class Creature {
         let wallDistances = DistanceCalculator.circleInsideBoxAndBoxEdges(this.image, trackInfo.background, this.sight);
         console.log(wallDistances);
         // obstacle searching 
-        let v = DistanceCalculator.circleAndArrayOfBoxCoords(this.image, trackInfo.obstacles[0].lineCoords, trackInfo.obstacles[0].width, trackInfo.obstacles[0].height, this.sight);
+        let v = DistanceCalculator.circleAndArrayOfLineCoords(this.image, trackInfo.obstacles[0].lineCoords, this.sight);
         console.log(v);
+        return DistanceCalculator.circleAndArrayOfLineCoords(this.image, trackInfo.obstacles[0].lineCoords, this.sight);
     }
     think() {
         // decides what to do: move, search, memorize anything {omg it should have a memory of sorts}

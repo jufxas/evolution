@@ -20,17 +20,60 @@ const DistanceCalculator = {
             return distances;
         }
         return {
-            leftSide: Math.abs(rectangle.x - (circle.x - circle.radius)),
-            rightSide: Math.abs(rectangle.x + rectangle.width - (circle.x + circle.radius)),
-            ceiling: Math.abs(rectangle.y - (circle.y - circle.radius)),
-            floor: Math.abs(rectangle.y + rectangle.height - (circle.y + circle.radius)),
+            leftSide: leftSide,
+            rightSide: rightSide,
+            ceiling: ceiling,
+            floor: floor,
         };
     },
-    circleAndArrayOfBoxCoords: function (circle, boxCoords, width, height, distanceNoGreaterThan) {
+    circleAndArrayOfLineCoords: function (circle, lineCoords, maxDistance) {
         let b = {};
-        for (let i = 0; i < boxCoords.length; i++) {
+        for (let i = 0; i < lineCoords.length; i++) {
+            if (i !== lineCoords.length - 1) {
+                let A = lineCoords[i];
+                let B = lineCoords[i + 1];
+                if (A.x === B.x && A.y === B.y)
+                    continue;
+                let C = new XY(circle.x, circle.y);
+                const M = (B.y - A.y) / (B.x - A.x);
+                const V = (B.x - A.x) / (A.y - B.y);
+                const K = (A.y - B.y) / (B.x - A.x);
+                let Dx = (-M * B.x + B.y - C.y + V * C.x) / (V - M);
+                let Dy = (M / (V - M)) * (-M * B.x + B.y - C.y + V * C.x) + B.y + K * B.x;
+                let D = new XY(Dx, Dy);
+            }
         }
+        return b;
+    },
+    circleAndLine: function (circle, line, maxDistance) {
+        let A = line.P1;
+        let B = line.P2;
+        if (A.x > B.x) {
+            A = line.P2;
+            B = line.P1;
+        }
+        // just so A is always to the left and B is to the right 
+        let C = new XY(circle.x, circle.y);
+        const M = (B.y - A.y) / (B.x - A.x);
+        const V = (B.x - A.x) / (A.y - B.y);
+        const K = (A.y - B.y) / (B.x - A.x);
+        let Dx = (-M * B.x + B.y - C.y + V * C.x) / (V - M);
+        let Dy = M * Dx + B.y + K * B.x;
+        let D = new XY(Dx, Dy);
+        let Mp = new XY((A.x + B.x) / 2, (A.y + B.y) / 2);
+        let Dmp = Math.sqrt(Math.pow((D.x - Mp.x), 2) + Math.pow((D.y - Mp.y), 2));
+        let Amp = Math.sqrt(Math.pow((A.x - Mp.x), 2) + Math.pow((A.y - Mp.y), 2));
+        if (Dmp <= Amp) {
+            console.log("inline");
+        }
+        else {
+            console.log("outline");
+        }
+        return D;
     },
 };
 
 //jufSAVE
+var distance = {
+    DistanceCalculator: DistanceCalculator   
+}

@@ -7,6 +7,7 @@ const CollisionHandler = {
             circle.y - circle.radius <= rectangle.y ||
             circle.y + circle.radius >= rectangle.y + rectangle.height);
     },
+    // does not check for if circle is inside rectangle or vice versa 
     circleAndRectangle: function (circle, rectangle) {
         return (
         // left edge 
@@ -17,7 +18,9 @@ const CollisionHandler = {
             ((circle.y + circle.radius <= rectangle.y) && (circle.y + circle.radius >= rectangle.y)) ||
             // bottom edge 
             ((circle.y - circle.radius >= rectangle.y + rectangle.height) && (circle.y - circle.radius <= rectangle.y + rectangle.height)));
-    }
+    },
+    circleAndArrayOfLineCoords: function (circle, lineCoords, maxDistance) {
+    },
 };
 
 //jufSAVE

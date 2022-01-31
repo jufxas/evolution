@@ -30,6 +30,8 @@ declare const creature:     typeof import("./ts-utils/creature")
 declare const clh:          typeof import("./ts-utils/collisionHandler")
 declare const dst:          typeof import("./ts-utils/distance")
 declare const line:         typeof import("./ts-utils/shapes/line")
+declare const xy:           typeof import("./ts-utils/xy")
+declare const distance:     typeof import("./ts-utils/distance")
 
 
 // global components / boilerplate 
@@ -41,8 +43,6 @@ let mouseX = 0
 let mouseY = 0
 let frameCount = 0
 let backgroundColor =  new rgba.RGBA(100, 100, 255) 
-
-// ! WHAT TO DO: re work on the draw system into drawing lines instead of squares because collision detection for line & circle is cheaper 
 
 
 // draw handler 
@@ -76,12 +76,20 @@ evt.EventCargo.onmouseupPackages.shipPackage(new evt.EventPackage("mouseUp", () 
 
 }))
 
+let j = new xy.XY(0,0)
 
 evt.EventCargo.onkeyupPackages.shipPackage(new evt.EventPackage("keyUp", (e) => {
     if (e.key === "e") {
         allowDrawing = !allowDrawing
         mq.$("h1#allowDrawing").html(`allowDrawing: ${allowDrawing}`)
     } 
+    if (e.key.includes("Arrow")) {
+        let key = e.key.replace("Arrow","").toLocaleLowerCase()
+        track.creatures[0].move(key, 5)
+
+        j = distance.DistanceCalculator.circleAndLine(track.creatures[0].image, v)
+        
+    }
 
 }))
 
@@ -97,6 +105,8 @@ track.addCreature(new creature.Creature({
     image: new circle.Circle({x: 0, y: 0, radius: 10, outlineColor: new rgba.RGBA(0,0,0), fillColor: new rgba.RGBA(0,0,0)})
 }))
 
+let v = new line.Line(new xy.XY(178, 105), new xy.XY(310, 188))
+
 function update() {
     renderBackground(canvas, ctx, backgroundColor.format())
     track.renderBackground(ctx)
@@ -110,6 +120,9 @@ function update() {
     }
     // drawHandler.renderRectangles(ctx)
     lineDrawHandler.renderLines(ctx)
+
+    v.drawLine(ctx)
+    new circle.Circle({x: j.x, y: j.y, radius: 5, outlineColor: new rgba.RGBA(0,0,0), fillColor: new rgba.RGBA(0,0,0)}).drawCircle(ctx)
     
 }
 

@@ -31,6 +31,8 @@ class Track {
     }
     // adds data drawn onto the track into the obstacles array 
     onUpdate(lineDrawHandler) {
+        if (!lineDrawHandler.mouseWentDownAfterBeingUp && this.checkForDrawingOnTrack)
+            return;
         let lineCopy = lineDrawHandler.copyLines();
         if (lineCopy.length === 0 || lineCopy.length - this.lineSeparator === 0)
             return;
