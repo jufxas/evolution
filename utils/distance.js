@@ -46,6 +46,7 @@ const DistanceCalculator = {
         return b;
     },
     circleAndLine: function (circle, line, maxDistance) {
+        console.time("Start");
         let A = line.P1;
         let B = line.P2;
         if (A.x > B.x) {
@@ -61,14 +62,16 @@ const DistanceCalculator = {
         let Dy = M * Dx + B.y + K * B.x;
         let D = new XY(Dx, Dy);
         let Mp = new XY((A.x + B.x) / 2, (A.y + B.y) / 2);
-        let Dmp = Math.sqrt(Math.pow((D.x - Mp.x), 2) + Math.pow((D.y - Mp.y), 2));
-        let Amp = Math.sqrt(Math.pow((A.x - Mp.x), 2) + Math.pow((A.y - Mp.y), 2));
-        if (Dmp <= Amp) {
+        // let Dmp = Math.sqrt((D.x-Mp.x)**2+(D.y-Mp.y)**2)
+        // let Amp = Math.sqrt((A.x-Mp.x)**2+(A.y-Mp.y)**2)
+        // Dmp <= Amp
+        if (A.x <= D.x && D.x <= B.x) {
             console.log("inline");
         }
         else {
             console.log("outline");
         }
+        console.timeEnd("Start");
         return D;
     },
 };

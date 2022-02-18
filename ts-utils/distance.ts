@@ -57,6 +57,7 @@ export const DistanceCalculator = {
         return b 
     },
     circleAndLine: function(circle: Circle, line: Line, maxDistance?: number) {
+        console.time("Start")
         let A = line.P1
         let B = line.P2
         if (A.x > B.x) { A = line.P2; B = line.P1 }
@@ -73,14 +74,18 @@ export const DistanceCalculator = {
         let D = new XY(Dx, Dy)
 
         let Mp = new XY((A.x+B.x)/2, (A.y+B.y)/2)
-        let Dmp = Math.sqrt((D.x-Mp.x)**2+(D.y-Mp.y)**2)
-        let Amp = Math.sqrt((A.x-Mp.x)**2+(A.y-Mp.y)**2)
-        if (Dmp <= Amp) {
+
+        // let Dmp = Math.sqrt((D.x-Mp.x)**2+(D.y-Mp.y)**2)
+        // let Amp = Math.sqrt((A.x-Mp.x)**2+(A.y-Mp.y)**2)
+
+        // Dmp <= Amp
+        if (A.x <= D.x && D.x <= B.x) {
             console.log("inline")
         }
         else {
             console.log("outline")
         }
+        console.timeEnd("Start")
 
     
 
