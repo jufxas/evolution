@@ -122,7 +122,7 @@ function update() {
     lineDrawHandler.renderLines(ctx)
 
     v.drawLine(ctx)
-    new circle.Circle({x: j.x, y: j.y, radius: 5, outlineColor: new rgba.RGBA(0,0,0), fillColor: new rgba.RGBA(0,0,0)}).drawCircle(ctx)
+    new circle.Circle({x: j.x, y: j.y, radius: 1, outlineColor: new rgba.RGBA(0,0,0), fillColor: new rgba.RGBA(0,0,0)}).drawCircle(ctx)
     
 }
 

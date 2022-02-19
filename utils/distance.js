@@ -61,15 +61,22 @@ const DistanceCalculator = {
         let Dx = (-M * B.x + B.y - C.y + V * C.x) / (V - M);
         let Dy = M * Dx + B.y + K * B.x;
         let D = new XY(Dx, Dy);
-        let Mp = new XY((A.x + B.x) / 2, (A.y + B.y) / 2);
-        // let Dmp = Math.sqrt((D.x-Mp.x)**2+(D.y-Mp.y)**2)
-        // let Amp = Math.sqrt((A.x-Mp.x)**2+(A.y-Mp.y)**2)
-        // Dmp <= Amp
         if (A.x <= D.x && D.x <= B.x) {
             console.log("inline");
+            // if dist <= radius -> collision 
+            let p = Math.sqrt(Math.pow((circle.x - D.x), 2) + Math.pow((circle.y - D.y), 2));
+            console.log({ dist: p, collision: p <= circle.radius });
         }
         else {
             console.log("outline");
+            if (circle.x >= B.x) { // it's closer to B 
+                let p = Math.sqrt(Math.pow((circle.x - B.x), 2) + Math.pow((circle.y - B.y), 2));
+                console.log({ dist: p, collision: p <= circle.radius });
+            }
+            else { // it's closer to A 
+                let p = Math.sqrt(Math.pow((circle.x - A.x), 2) + Math.pow((circle.y - A.y), 2));
+                console.log({ dist: p, collision: p <= circle.radius });
+            }
         }
         console.timeEnd("Start");
         return D;
