@@ -6,18 +6,16 @@ import { Line } from "./shapes/line"
 
 export const DistanceCalculator = {
 
-    // void keyword is temporary 
-
     // returns the distance the outside of a circle is from the left, right, up, and down side of a wall
     circleInsideBoxAndBoxEdges: function(circle: Circle, rectangle: Rectangle, maxDistance?: number): 
 {leftSide?: number, rightSide?: number, ceiling?: number, floor?: number } 
 
     {
         let distances: any = {}
-        let leftSide = Math.abs(rectangle.x - (circle.x - circle.radius))
+        let leftSide =  Math.abs(rectangle.x - (circle.x - circle.radius))
         let rightSide = Math.abs(rectangle.x + rectangle.width - (circle.x + circle.radius))
-        let ceiling = Math.abs(rectangle.y - (circle.y - circle.radius))
-        let floor = Math.abs(rectangle.y + rectangle.height - (circle.y + circle.radius))
+        let ceiling =   Math.abs(rectangle.y - (circle.y - circle.radius))
+        let floor =     Math.abs(rectangle.y + rectangle.height - (circle.y + circle.radius))
 
         if (maxDistance) {
             if (leftSide <= maxDistance) distances["leftSide"] = leftSide
@@ -57,15 +55,28 @@ export const DistanceCalculator = {
         return b 
     },
     circleAndLine: function(circle: Circle, line: Line, maxDistance?: number) {
-        console.time("Start")
         let A = line.P1
         let B = line.P2
-        if (A.x > B.x) { A = line.P2; B = line.P1 }
-        // just so A is always to the left and B is to the right 
+        if (A.x > B.x) { A = line.P2; B = line.P1 } // just so A is always to the left and B is to the right 
+         // if {return} is <= 0 , collision has happened 
+
+        // vertical line 
+        else if (A.x === B.x) {
+            // A is on the top 
+            if (A.y > B.y) { A = line.P2; B = line.P1} 
+
+            if (circle.y < A.y) { // circle is above line segment
+                return - circle.y - circle.radius + A.y
+            } else if (circle.y > B.y) {  // circle is below line segment
+                return circle.y - circle.radius - B.y
+            } else if (circle.x < A.x) {   // circle is left of the line 
+                return - circle.x - circle.radius + A.x
+            } else if (circle.x > A.x) { // circle is right of line 
+                return circle.x - circle.radius - A.x
+            } 
+        }
 
         let C = new XY(circle.x, circle.y)
-
-        
         const M = (B.y - A.y)/(B.x - A.x)
         const V = (B.x - A.x)/(A.y - B.y)
         const K = (A.y - B.y)/(B.x - A.x)
@@ -74,26 +85,23 @@ export const DistanceCalculator = {
         let D = new XY(Dx, Dy)
 
         if (A.x <= D.x && D.x <= B.x) {
-            console.log("inline")
             // if dist <= radius -> collision 
-            let p = Math.sqrt( (circle.x - D.x)**2 + (circle.y - D.y)**2  )
-            console.log({dist: p, collision: p <= circle.radius})
+            // let p = Math.sqrt( (circle.x - D.x)**2 + (circle.y - D.y)**2  )
+            // console.log({dist: p, collision: p <= circle.radius})
+            return Math.sqrt((circle.x - D.x)**2 + (circle.y - D.y)**2) - circle.radius
         }
         else {
-            console.log("outline")
             if (circle.x >= B.x) { // it's closer to B 
-                let p = Math.sqrt( (circle.x-B.x)**2 + (circle.y-B.y)**2 )
-                console.log({dist: p, collision: p <= circle.radius})
+                // let p = Math.sqrt( (circle.x-B.x)**2 + (circle.y-B.y)**2 )
+                // console.log({dist: p, collision: p <= circle.radius})
+                return Math.sqrt( (circle.x-B.x)**2 + (circle.y-B.y)**2 ) - circle.radius
             } else { // it's closer to A 
-                let p = Math.sqrt( (circle.x-A.x)**2 + (circle.y-A.y)**2 )
-                console.log({dist: p, collision: p <= circle.radius})
+                // let p = Math.sqrt( (circle.x-A.x)**2 + (circle.y-A.y)**2 )
+                // console.log({dist: p, collision: p <= circle.radius})
+                return Math.sqrt( (circle.x-A.x)**2 + (circle.y-A.y)**2 ) - circle.radius
 
             }
         }
-        console.timeEnd("Start")
 
-    
-
-        return D 
     },
 }

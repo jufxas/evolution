@@ -76,19 +76,28 @@ evt.EventCargo.onmouseupPackages.shipPackage(new evt.EventPackage("mouseUp", () 
 
 }))
 
-let j = new xy.XY(0,0)
 
 evt.EventCargo.onkeyupPackages.shipPackage(new evt.EventPackage("keyUp", (e) => {
     if (e.key === "e") {
         allowDrawing = !allowDrawing
         mq.$("h1#allowDrawing").html(`allowDrawing: ${allowDrawing}`)
     } 
-    if (e.key.includes("Arrow")) {
-        let key = e.key.replace("Arrow","").toLocaleLowerCase()
-        track.creatures[0].move(key, 5)
 
-        j = distance.DistanceCalculator.circleAndLine(track.creatures[0].image, v)
-        
+    if (e.key === "w") {
+        track.creatures[0].move("up", 5)
+        console.log(distance.DistanceCalculator.circleAndLine(track.creatures[0].image, v))
+    }
+    if (e.key === "a") {
+        track.creatures[0].move("left", 5)
+        console.log(distance.DistanceCalculator.circleAndLine(track.creatures[0].image, v))
+    }
+    if (e.key === "s") {
+        track.creatures[0].move("down", 5)
+        console.log(distance.DistanceCalculator.circleAndLine(track.creatures[0].image, v))
+    }
+    if (e.key === "d") {
+        track.creatures[0].move("right", 5)
+        console.log(distance.DistanceCalculator.circleAndLine(track.creatures[0].image, v))
     }
 
 }))
@@ -105,7 +114,7 @@ track.addCreature(new creature.Creature({
     image: new circle.Circle({x: 0, y: 0, radius: 10, outlineColor: new rgba.RGBA(0,0,0), fillColor: new rgba.RGBA(0,0,0)})
 }))
 
-let v = new line.Line(new xy.XY(178, 105), new xy.XY(310, 188))
+let v = new line.Line(new xy.XY(178, 105), new xy.XY(300, 188))
 
 function update() {
     renderBackground(canvas, ctx, backgroundColor.format())
@@ -122,7 +131,6 @@ function update() {
     lineDrawHandler.renderLines(ctx)
 
     v.drawLine(ctx)
-    new circle.Circle({x: j.x, y: j.y, radius: 1, outlineColor: new rgba.RGBA(0,0,0), fillColor: new rgba.RGBA(0,0,0)}).drawCircle(ctx)
     
 }
 
