@@ -7,10 +7,11 @@ import { RGBA } from "./rgba"
 import { Creature } from "./creature"
 import { Circle } from "./shapes/circle"
 import { XY } from "./xy"
+import { Line } from "./shapes/line"
 
 export class Track {
     background: Rectangle
-    private finishLine: Rectangle
+    finishLine: Line
     private obstacles: LineChunks[] = []
     private lineSeparator = 0 
     private checkForDrawingOnTrack = true 
@@ -21,24 +22,22 @@ export class Track {
     constructor(background: Rectangle) {
         this.background = background
         this.topLeft = {x: background.x, y: background.y}
-        this.finishLine = new Rectangle(new Rectangle({x:0,y:0,width:0,height:0,outlineColor:new RGBA(0,0,0),fillColor:new RGBA(0,0,0)}))
+        this.finishLine = new Line(new XY(0, 0), new XY(0, 0), new RGBA(0,0,0))
 
 
         if (this.background.width <= this.background.height) {
-            this.finishLine.x = this.background.x
-            this.finishLine.y = this.background.y + 0.9*this.background.height
-            this.finishLine.width = this.background.width
-            this.finishLine.height = 1
+            this.finishLine.P1 = new XY(this.background.x, this.background.y + 0.9*this.background.height)
+            this.finishLine.P2 = new XY(this.background.x + this.background.width, this.background.y + 0.9*this.background.height)
         } else {
-            this.finishLine.x = this.background.x + 0.9*this.background.width 
-            this.finishLine.y = this.background.y 
-            this.finishLine.height = this.background.height
-            this.finishLine.width = 1
+            this.finishLine.P1 = new XY(this.background.x + 0.9*this.background.width, this.background.y )
+            this.finishLine.P2 = new XY(this.background.x + 0.9*this.background.width, this.background.y + this.background.height)
         }
     }
+    returnObstacles() { return this.obstacles } // for debugging purposes 
+
     renderBackground(canvasRendererContext: CanvasRenderingContext2D) {
         this.background.drawRectangle(canvasRendererContext)
-        this.finishLine.drawRectangle(canvasRendererContext)
+        this.finishLine.drawLine(canvasRendererContext)
     }
 
     // adds data drawn onto the track into the obstacles array 
@@ -93,7 +92,7 @@ export class Track {
         }
     }
 
-    returnTrackInfo(): {obstacles: LineChunks[], background: Rectangle ,finishLine: Rectangle} {
+    returnTrackInfo(): {obstacles: LineChunks[], background: Rectangle ,finishLine: Line} {
         return {
             obstacles: this.obstacles, 
             background: this.background, 

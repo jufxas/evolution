@@ -16,7 +16,10 @@ class LineDrawHandler {
             this.pointHolder.push(new XY(-1, -1)); // need some null points or identifiers so that when the pen is up then goes down, it doesn't link them up 
         }
         if (this.isMouseDown) {
-            this.pointHolder.push(new XY(mouseX, mouseY));
+            if (this.pointHolder.length === 0 ||
+                !(this.pointHolder[this.pointHolder.length - 1].x === mouseX &&
+                    this.pointHolder[this.pointHolder.length - 1].y === mouseY))
+                this.pointHolder.push(new XY(mouseX, mouseY));
         }
     }
     renderLines(canvasRendererContext) {

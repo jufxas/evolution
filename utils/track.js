@@ -11,23 +11,20 @@ class Track {
         this.margin = 10;
         this.background = background;
         this.topLeft = { x: background.x, y: background.y };
-        this.finishLine = new Rectangle(new Rectangle({ x: 0, y: 0, width: 0, height: 0, outlineColor: new RGBA(0, 0, 0), fillColor: new RGBA(0, 0, 0) }));
+        this.finishLine = new Line(new XY(0, 0), new XY(0, 0), new RGBA(0, 0, 0));
         if (this.background.width <= this.background.height) {
-            this.finishLine.x = this.background.x;
-            this.finishLine.y = this.background.y + 0.9 * this.background.height;
-            this.finishLine.width = this.background.width;
-            this.finishLine.height = 1;
+            this.finishLine.P1 = new XY(this.background.x, this.background.y + 0.9 * this.background.height);
+            this.finishLine.P2 = new XY(this.background.x + this.background.width, this.background.y + 0.9 * this.background.height);
         }
         else {
-            this.finishLine.x = this.background.x + 0.9 * this.background.width;
-            this.finishLine.y = this.background.y;
-            this.finishLine.height = this.background.height;
-            this.finishLine.width = 1;
+            this.finishLine.P1 = new XY(this.background.x + 0.9 * this.background.width, this.background.y);
+            this.finishLine.P2 = new XY(this.background.x + 0.9 * this.background.width, this.background.y + this.background.height);
         }
     }
+    returnObstacles() { return this.obstacles; } // for debugging purposes 
     renderBackground(canvasRendererContext) {
         this.background.drawRectangle(canvasRendererContext);
-        this.finishLine.drawRectangle(canvasRendererContext);
+        this.finishLine.drawLine(canvasRendererContext);
     }
     // adds data drawn onto the track into the obstacles array 
     onUpdate(lineDrawHandler) {

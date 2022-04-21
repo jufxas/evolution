@@ -27,6 +27,9 @@ export class LineDrawHandler {
         }
 
         if (this.isMouseDown) {
+            if (this.pointHolder.length === 0 || 
+                !(this.pointHolder[this.pointHolder.length - 1].x === mouseX  && 
+                this.pointHolder[this.pointHolder.length - 1].y === mouseY))
             this.pointHolder.push(new XY(mouseX, mouseY));
         }
     }

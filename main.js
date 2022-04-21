@@ -1,6 +1,10 @@
 "use strict";
 // TODO: package utility functions and classes into separate files 
 // ? Make sure the creatures do not phase through the walls 
+// * Figure out how the creatures decide what actions to do 
+// * Create probability table of what actions a creature can do 
+// * Make searching something that takes time like the creature cannot do anything else for X seconds if they decide to think 
+// * Horizontal line and ball distance checker need to be further fine tuned to handle all cases 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -42,25 +46,27 @@ evt.EventCargo.onmousedownPackages.shipPackage(new evt.EventPackage("callDrawFun
 evt.EventCargo.onmouseupPackages.shipPackage(new evt.EventPackage("mouseUp", () => {
     lineDrawHandler.onMouseUpFunction();
 }));
-evt.EventCargo.onkeyupPackages.shipPackage(new evt.EventPackage("keyUp", (e) => {
+evt.EventCargo.onkeydownPackages.shipPackage(new evt.EventPackage("keyDown", (e) => {
     if (e.key === "e") {
         allowDrawing = !allowDrawing;
         mq.$("h1#allowDrawing").html(`allowDrawing: ${allowDrawing}`);
     }
     if (e.key === "w") {
         track.creatures[0].move("up", 5);
-        console.log(distance.DistanceCalculator.circleAndLine(track.creatures[0].image, v));
+        track.creatures[0].search({ obstacles: track.returnObstacles(), background: track.background, finishLine: track.finishLine });
     }
     if (e.key === "a") {
         track.creatures[0].move("left", 5);
+        track.creatures[0].search({ obstacles: track.returnObstacles(), background: track.background, finishLine: track.finishLine });
         console.log(distance.DistanceCalculator.circleAndLine(track.creatures[0].image, v));
     }
     if (e.key === "s") {
         track.creatures[0].move("down", 5);
-        console.log(distance.DistanceCalculator.circleAndLine(track.creatures[0].image, v));
+        track.creatures[0].search({ obstacles: track.returnObstacles(), background: track.background, finishLine: track.finishLine });
     }
     if (e.key === "d") {
         track.creatures[0].move("right", 5);
+        track.creatures[0].search({ obstacles: track.returnObstacles(), background: track.background, finishLine: track.finishLine });
         console.log(distance.DistanceCalculator.circleAndLine(track.creatures[0].image, v));
     }
 }));
@@ -71,9 +77,10 @@ function renderBackground(canvasRenderer, canvasRendererContext, background) {
     canvasRendererContext.fillRect(0, 0, canvasRenderer.width, canvasRenderer.height);
 }
 track.addCreature(new creature.Creature({
-    image: new circle.Circle({ x: 0, y: 0, radius: 10, outlineColor: new rgba.RGBA(0, 0, 0), fillColor: new rgba.RGBA(0, 0, 0) })
+    image: new circle.Circle({ x: 0, y: 0, radius: 10, outlineColor: new rgba.RGBA(0, 0, 0), fillColor: new rgba.RGBA(0, 0, 0) }),
+    sight: 1000,
 }));
-let v = new line.Line(new xy.XY(178, 105), new xy.XY(300, 188));
+let v = new line.Line(new xy.XY(165, 25), new xy.XY(169, 25));
 function update() {
     renderBackground(canvas, ctx, backgroundColor.format());
     track.renderBackground(ctx);

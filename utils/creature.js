@@ -25,11 +25,14 @@ class Creature {
     search(trackInfo) {
         // wall searching 
         let wallDistances = DistanceCalculator.circleInsideBoxAndBoxEdges(this.image, trackInfo.background, this.sight);
-        console.log(wallDistances);
         // obstacle searching 
-        let v = DistanceCalculator.circleAndArrayOfLineCoords(this.image, trackInfo.obstacles[0].lineCoords, this.sight);
-        console.log(v);
-        return DistanceCalculator.circleAndArrayOfLineCoords(this.image, trackInfo.obstacles[0].lineCoords, this.sight);
+        let obstacleDistances = [];
+        for (let i = 0; i < trackInfo.obstacles.length; i++) {
+            obstacleDistances.push(DistanceCalculator.circleAndArrayOfLineCoords(this.image, trackInfo.obstacles[i].lineCoords, this.sight));
+        }
+        console.log(obstacleDistances);
+        // finish line searching 
+        let finishLineDistance = DistanceCalculator.circleAndLine(this.image, trackInfo.finishLine);
     }
     think() {
         // decides what to do: move, search, memorize anything {omg it should have a memory of sorts}

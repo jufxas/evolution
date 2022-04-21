@@ -19,7 +19,17 @@ const CollisionHandler = {
             // bottom edge 
             ((circle.y - circle.radius >= rectangle.y + rectangle.height) && (circle.y - circle.radius <= rectangle.y + rectangle.height)));
     },
-    circleAndArrayOfLineCoords: function (circle, lineCoords, maxDistance) {
+    circleAndLine: function (circle, line) {
+        return DistanceCalculator.circleAndLine(circle, line) <= 0;
+    },
+    circleAndArrayOfLineCoords: function (circle, lineCoords) {
+        for (let i = 0; i < lineCoords.length; i++) {
+            if (i !== lineCoords.length - 1) {
+                if (this.circleAndLine(circle, new Line(lineCoords[i], lineCoords[i + 1])))
+                    return true;
+            }
+        }
+        return false;
     },
 };
 
